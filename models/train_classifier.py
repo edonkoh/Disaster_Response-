@@ -14,6 +14,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, Tf
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 from  sklearn.metrics import classification_report
+import pickle 
+
 
 def load_data(database_filepath):
     '''
@@ -47,6 +49,11 @@ def tokenize(text):
     return tokens_clean 
 
 def build_model():
+    '''
+    Returns a classification multioutput pipeline, that includes a vectoriser, 
+    a tfidftransformer, and randomforest classifiers. 
+    ouput: model pipeline 
+    '''
     pipeline = Pipeline(
         [('vectoriser', CountVectorizer(tokenizer= tokenize)),
         ('transformer', TfidfTransformer()), 
@@ -56,11 +63,17 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+    y_test_predict = model.predict(X_test)
+    for idx, class_column in enumerate (category_names):
+        y_true = Y_test[class_column]
+        y_predict = y_test_predict[:, idx]
+        print(f'\n label: {class_column}\n')
+        print(classification_report(y_true, y_predict))
 
 
 def save_model(model, model_filepath):
-    pass
+    with open(model_filepath, 'wb') as file: 
+        pickle.dump(model, file)
 
 
 def main():
