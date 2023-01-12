@@ -57,7 +57,9 @@ def build_model():
     pipeline = Pipeline(
         [('vectoriser', CountVectorizer(tokenizer= tokenize)),
         ('transformer', TfidfTransformer()), 
-        ('classifier', MultiOutputClassifier(RandomForestClassifier()))]
+        ('classifier', MultiOutputClassifier(RandomForestClassifier(
+            criterion= 'entropy', min_samples_leaf= 4, n_estimators= 200
+        )))]
     )
     return pipeline 
 
