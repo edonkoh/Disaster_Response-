@@ -92,6 +92,11 @@ def save_model(model, model_filepath):
 
 
 def main():
+    '''
+    This function will run all the procedures needed to train a classisifcation model. 
+    It will load the dataset from a given file path, it will train a model that has been optimised separately 
+    (ML Pipeline preparation.ipynb), and save the trained model to classifier.pkl.
+    '''
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
