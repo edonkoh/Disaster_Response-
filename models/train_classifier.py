@@ -65,6 +65,13 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    Prints a classification report for the multioutput model 
+    Input: Model - train model pipeline 
+            X_test, Y_test - test data set including features, and target variable , respectively 
+            category_names - a vector of the same number of columns as Y_test containing the category names 
+            save_model 
+    '''    
     y_test_predict = model.predict(X_test)
     for idx, class_column in enumerate (category_names):
         y_true = Y_test[class_column]
@@ -74,6 +81,12 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    '''
+    saves the model objects to a pickle file
+    Inputs: Model object
+            Model_filepath 
+            
+    '''
     with open(model_filepath, 'wb') as file: 
         pickle.dump(model, file)
 

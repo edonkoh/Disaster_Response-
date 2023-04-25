@@ -6,6 +6,14 @@ import argparse
 
 
 def load_data(messages_filepath, categories_filepath):
+    '''
+    Load messages and categories from input file path. 
+    Input: 
+    messages_filepath - location of messages file 
+    categories_filepath - locaction of categories file 
+    Output: 
+    df - dataframe countaining the merged messages and categories 
+    '''
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df= messages.merge(categories, on= 'id', how= 'inner')
@@ -13,6 +21,14 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    '''
+    clean the dataset countained in df by converting categories to binary variables, 
+    adding appropriate column names and removing duplicates.
+    Input: 
+    df - a dataframe produced by load_data()
+    Output: 
+    df - the clean dataset 
+    '''
     # create a dataframe of the 36 individual category columns
     categories = df['categories'].str.split(pat= ';', n= -1, expand= True)
     # select the first row of the categories dataframe
@@ -45,11 +61,23 @@ def clean_data(df):
     return(df)
 
 def save_data(df, database_filename):
+    '''
+    saves the dataframe df to a sqlite database indicated in the input 
+    Input: 
+    df - pandas dataframe, 
+    database_filename - location of sqlite database 
+    '''
     engine = create_engine(f'sqlite:///{database_filename}')
     df.to_sql('messages', engine, index=False, if_exists = 'replace')
 
 def main(messages_filepath, categories_filepath, database_filepath):
- 
+    '''
+    run the process data procedures : load, clean and saves data 
+    Input: 
+    messages_filepath - location of messages file 
+    categories_filepath - locaction of categories file 
+    database_filename - location of sqlite database
+    '''
     print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
             .format(messages_filepath, categories_filepath))
     df = load_data(messages_filepath, categories_filepath)
