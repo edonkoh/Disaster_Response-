@@ -48,23 +48,38 @@ def tokenize(text):
     tokens_clean = [wnl.lemmatize(word, pos = 'n') for word in tokens_clean]
     return tokens_clean 
 
-def build_model():
+def build_model(X_train, Y_train):
     '''
     Returns a classification multioutput pipeline, that includes a vectoriser, 
-    a tfidftransformer, and randomforest classifiers. 
+    a tfidftransformer, and randomforest classifiers. The model parameters are 
+    determined via Cross-Validation Grid Search.
     ouput: model pipeline 
     '''
     pipeline = Pipeline(
         [('vectoriser', CountVectorizer(tokenizer= tokenize)),
         ('transformer', TfidfTransformer()), 
-        ('classifier', MultiOutputClassifier(RandomForestClassifier(
-            criterion= 'entropy', min_samples_leaf= 4, n_estimators= 200
-        )))]
+        ('classifier', MultiOutputClassifier(RandomForestClassifier()))]
     )
-    return pipeline 
+    parameters = {
+        'classifier__estimator__n_estimators':[50, 100], 
+        'classifier__estimator__criterion':['entropy'], 
+        'classifier__estimator__min_samples_leaf': [10, 20]
+    }
+
+    cv = GridSearchCV(pipeline, parameters, scoring= 'f1_weighted', refit=True)
+    cv.fit(X_train, Y_train)
+    best_pipe = cv.best_estimator_
+    return best_pipe 
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    Prints a classification report for the multioutput model 
+    Input: Model - train model pipeline 
+            X_test, Y_test - test data set including features, and target variable , respectively 
+            category_names - a vector of the same number of columns as Y_test containing the category names 
+            save_model 
+    '''    
     y_test_predict = model.predict(X_test)
     for idx, class_column in enumerate (category_names):
         y_true = Y_test[class_column]
@@ -74,6 +89,12 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    '''
+    saves the model objects to a pickle file
+    Inputs: Model object
+            Model_filepath 
+            
+    '''
     with open(model_filepath, 'wb') as file: 
         pickle.dump(model, file)
 
@@ -85,11 +106,8 @@ def main():
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
         
-        print('Building model...')
-        model = build_model()
-        
-        print('Training model...')
-        model.fit(X_train, Y_train)
+        print('Building model: run cross-validation grid search and fit best model...')
+        model = build_model(X_train, Y_train)
         
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
