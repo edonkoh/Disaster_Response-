@@ -2,5 +2,6 @@ data/*.csv
 .DS_Store
 Disaster_Resp/
 *.db
-
+disaster_response/
+env/
 
