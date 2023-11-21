@@ -29,6 +29,9 @@ def tokenize(text):
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('messages', engine)
+categories = df.drop(columns = ['id', 'message', 'original', 'genre']).sum(axis = 0)
+categories.name = 'count'
+top_categories = categories.to_frame().reset_index().sort_values('count').tail(10)
 
 # load model
 model = joblib.load("../models/classifier.pkl")
@@ -62,6 +65,24 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=top_categories['index'],
+                    y=top_categories['count']
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Top 10 Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Category"
                 }
             }
         }
