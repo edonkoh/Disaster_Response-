@@ -57,7 +57,6 @@ def clean_data(df):
     df = pd.concat([df, categories], axis =1)
     
     df = df.drop_duplicates()
-    
     return(df)
 
 def save_data(df, database_filename):
@@ -95,9 +94,9 @@ def main(messages_filepath, categories_filepath, database_filepath):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('process Data for Disaster Response')
-    parser.add_argument('-messages_file', help= 'path to messages file.')
-    parser.add_argument('-categories_file', help= 'path to categories file.')
-    parser.add_argument('-db_file', help= 'path to database file')
+    parser.add_argument('messages_file', help= 'path to messages file.')
+    parser.add_argument('categories_file', help= 'path to categories file.')
+    parser.add_argument('db_file', help= 'path to database file')
     args = parser.parse_args()
     main(args.messages_file, args.categories_file, args.db_file)
     
